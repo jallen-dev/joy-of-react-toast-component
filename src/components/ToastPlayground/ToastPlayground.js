@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import Button from "../Button";
-import ToastShelf from "../ToastShelf/ToastShelf";
+import { ToastContext } from "../ToastProvider";
+import ToastShelf from "../ToastShelf";
 
 import styles from "./ToastPlayground.module.css";
 
@@ -10,7 +11,7 @@ const VARIANT_OPTIONS = ["notice", "warning", "success", "error"];
 function ToastPlayground() {
   const [variant, setVariant] = useState(VARIANT_OPTIONS[0]);
   const [message, setMessage] = useState("");
-  const [toasts, setToasts] = useState([]);
+  const { addToast } = useContext(ToastContext);
 
   function submitToast(event) {
     event.preventDefault();
@@ -19,17 +20,9 @@ function ToastPlayground() {
       return;
     }
 
-    const id = Math.random();
-    const newToast = { message, variant, id };
-    const nextToasts = [...toasts, newToast];
-    setToasts(nextToasts);
+    addToast({ message, variant });
     setMessage("");
     setVariant(VARIANT_OPTIONS[0]);
-  }
-
-  function handleDismiss(id) {
-    const nextToasts = toasts.filter((toast) => toast.id !== id);
-    setToasts(nextToasts);
   }
 
   return (
@@ -39,7 +32,7 @@ function ToastPlayground() {
         <h1>Toast Playground</h1>
       </header>
 
-      <ToastShelf toasts={toasts} handleDismiss={handleDismiss} />
+      <ToastShelf />
 
       <form onSubmit={submitToast}>
         <div className={styles.controlsWrapper}>
